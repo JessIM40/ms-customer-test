@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: Customer Management Service
+  description: Microservice for customer management at XYZ bank
+  version: 1.0.0
+servers:
+  - url: http://localhost:8086
+paths:
+  /customer:
+    post:
+      tags:
+        - customer
+      summary: Create a new customer to the banking system
+      description: Create a new customer in the banking system
+      operationId: createCustomer
+      requestBody:
+        description: Created customer object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        '201':
+          description: Client created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Error in input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - customer
+      summary: Get list of all customers
+      description: Returns a list of all registered customers
+      operationId: customersList
+      responses:
+        '200':
+          description: List of successfully retrieved customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '500':
+          description: Error getting customers
+  /customer/{id}:
+    get:
+      tags:
+        - customer
+      summary: Get details of a customer by their ID.
+      description: ''
+      operationId: getCustomersByDni
+      parameters:
+        - name: id
+          in: path
+          description: 'Unique customer identifier'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer information successfully obtained
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - customer
+      summary: Update a customer
+      description: ''
+      operationId: updateCustomer
+      parameters:
+        - name: id
+          in: path
+          description: Customer that needs to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing customer in the system
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Client updated successfully
+        '400':
+          description: Error in input data
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - customer
+      summary: Delete customer
+      description: ''
+      operationId: deleteCustomer
+      parameters:
+        - name: id
+          in: path
+          description: The customer that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Client deleted successfully
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Customer:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - dni
+        - email
+      properties:
+        id:
+          type: string
+          example: 10
+        firstName:
+          type: string
+          example: 'Jess'
+        lastName:
+          type: string
+          example: 'Cuellar'
+        dni:
+          type: string
+          example: '01928374'
+          description: The user's DNI must be unique
+        email:
+          type: string
+          format: 'email'
+          example: jcuellar@email.com
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: 'Validation failed'
